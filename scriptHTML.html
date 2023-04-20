@@ -69,8 +69,8 @@
         }
     }
 
-    var airplane1 = 0;
-    var airplane2 = 0;
+    var airplane1Score = 0;
+    var airplane2Score = 0;
 
     class GameScene extends Phaser.Scene{
         cursors = undefined;
@@ -143,11 +143,11 @@
             // Add the player sprite
             this.airplane2 = this.physics.add.sprite(1300, 550.5, 'boeing');
             // Making our sprite bigger
-            this.airplane2.setScale(0.20);
+            this.airplane2.setScale(0.25);
             // Our sprite cannot leave the 800x600 display
             this.airplane2.setCollideWorldBounds(true);
             // Add score text for player 2
-            this.airplane2ScoreText = this.add.text(1600, 16, 'Boeing:' + airplane2, {
+            this.airplane2ScoreText = this.add.text(1350, 16, 'Boeing:' + airplane2Score, {
                 fontSize: '16px',
                 fill: '#fff' });
 
@@ -158,7 +158,7 @@
             // Our sprite cannot leave the 800x600 display
             this.airplane1.setCollideWorldBounds(true);
             // Add score text for player 1
-            this.airplane1ScoreText = this.add.text(16, 16, 'Airbus:' + airplane1, {
+            this.airplane1ScoreText = this.add.text(16, 16, 'Airbus:' + airplane1Score, {
                 fontSize: '16px',
                 fill: '#fff' });
 
@@ -166,8 +166,153 @@
             this.physics.add.collider(this.airplane2, this.platforms);
 
             this.gas = this.physics.add.staticGroup();
+            this.gas.scaleX = 0.1;
+            const gasPositions = [
+                [400,385], [100,305], [700,305], [100,465],
+                [700,465], [100,225], [700,225], [400,145]
+            ];
+            let currentGasIndex = Phaser.Math.Between(0, gasPositions.length - 1);
+            let currentGas = this.gas.create(...gasPositions[currentGasIndex], 'gas');
+            currentGas.setVisible(false);
+
+            this.time.addEvent({
+                delay: 3000,
+                loop: true,
+                callback: () => {
+                    currentGas.setVisible(false);
+                    currentGasIndex = Phaser.Math.Between(0, gasPositions.length - 1);
+                    currentGas = this.gas.create(...gasPositions[currentGasIndex], 'gas');
+                    currentGas.setVisible(true);
+                }
+            });
+
+            this.anims.create({
+                key: 'boeingLeft',
+                frames: this.anims.generateFrameNumbers('boeing', { start: 0, end: 7 }),
+                frameRate: 10,
+                repeat: -1
+            });
+
+            this.anims.create({
+                key: 'boeingTurn',
+                frames: [ { key: 'boeing', frame: 8 } ],
+                frameRate: 20
+            });
+
+            this.anims.create({
+                key: 'boeingRight',
+                frames: this.anims.generateFrameNumbers('boeing', { start: 9, end: 16 }),
+                frameRate: 10,
+                repeat: -1
+            });
+
+            this.anims.create({
+                key: 'airplaneLeft',
+                frames: this.anims.generateFrameNumbers('airplane', { start: 0, end: 7 }),
+                frameRate: 10,
+                repeat: -1
+            });
+
+            this.anims.create({
+                key: 'airplaneTurn',
+                frames: [ { key: 'airplane', frame: 8 } ],
+                frameRate: 20
+            });
+
+            this.anims.create({
+                key: 'airplaneRight',
+                frames: this.anims.generateFrameNumbers('airplane', { start: 9, end: 16 }),
+                frameRate: 10,
+                repeat: -1
+            });
 
         }
+
+        update(){
+            this.physics.overlap(this.airplane1, this.gas, (player, gas) => {
+                // Increment player 1 score
+                if(gas.visible) {
+                    airplane1Score += 1;
+                    this.airplane1ScoreText.setText('Airbus: ' + airplane1Score);
+
+                    // Remove bone
+                    gas.disableBody(true, true);
+                }
+            });
+
+            // Check for collisions between player 2 and bones
+            this.physics.overlap(this.airplane2, this.gas, (player, gas) => {
+                // Increment player 2 score
+                if(gas.visible) {
+                    airplane2Score += 1;
+                    this.airplane2ScoreText.setText('Boeing: ' + airplane2Score);
+
+                    // Remove bone
+                    gas.disableBody(true, true);
+                }
+            });
+
+            if (airplane1Score === 10 || airplane2Score === 10) {
+                this.cursors.up.isDown = false;
+                this.cursors.left.isDown = false;
+                this.cursors.down.isDown = false;
+                this.cursors.right.isDown = false;
+                this.keyW.isDown = false;
+                this.keyA.isDown = false;
+                this.keyS.isDown = false;
+                this.keyD.isDown = false;
+                this.scene.stop('gameScene');
+                this.scene.start('gameOverScene');
+            }
+
+            if (this.cursors.left.isDown)
+            {
+                this.airplane2.setVelocityX(-180);
+                this.airplane2.anims.play('boeingLeft', true);
+            }
+            else if (this.cursors.right.isDown)
+            {
+                this.airplane2.setVelocityX(180);
+                this.airplane2.anims.play('boeingRight', true);
+            }
+            else
+            {
+                this.airplane2.setVelocityX(0);
+                this.airplane2.anims.play('boeingTurn');
+            }
+            if (this.cursors.up.isDown && this.airplane2.body.touching.down)
+            {
+                this.airplane2.setVelocityY(-230);
+            }
+            if(this.cursors.down.isDown && !this.airplane2.body.touching.down) {
+                this.airplane2.setVelocityY(180);
+            }
+
+            if (this.keyA.isDown)
+            {
+                this.airplane1.setVelocityX(-180);
+                this.airplane1.anims.play('airplaneLeft', true);
+            }
+            else if (this.keyD.isDown)
+            {
+                this.airplane1.setVelocityX(180);
+                this.airplane1.anims.play('airplaneRight', true);
+            }
+            else
+            {
+                this.airplane1.setVelocityX(0);
+                this.airplane1.anims.play('airplaneTurn');
+            }
+
+            if (this.keyW.isDown && this.airplane1.body.touching.down)
+            {
+                this.airplane1.setVelocityY(-230);
+            }
+            if(this.keyS.isDown && !this.airplane1.body.touching.down) {
+                this.airplane1.setVelocityY(180);
+            }
+        }
+
 
 
     }
