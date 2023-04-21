@@ -167,14 +167,9 @@
 
             this.gas = this.physics.add.staticGroup();
 
-            //const gasPositions = [
-            //    [400,385], [100,305], [700,305], [100,465],
-            //    [700,465], [100,225], [700,225], [400,145]
-            //];
-
             const gasPositions = [
-                [330,130], [250,690], [850,420],
-                [1530,190], [1660,700]
+                [255,75], [680,310], [205,530],
+                [1215,130], [1280,520]
             ];
 
             let currentGasIndex = Phaser.Math.Between(0, gasPositions.length - 1);
@@ -182,7 +177,7 @@
             currentGas.setVisible(false);
 
             this.time.addEvent({
-                delay: 3000,
+                delay: 5000,
                 loop: true,
                 callback: () => {
                     currentGas.setVisible(false);
