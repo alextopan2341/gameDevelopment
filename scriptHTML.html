@@ -166,11 +166,17 @@
             this.physics.add.collider(this.airplane2, this.platforms);
 
             this.gas = this.physics.add.staticGroup();
-            this.gas.scaleX = 0.1;
+
+            //const gasPositions = [
+            //    [400,385], [100,305], [700,305], [100,465],
+            //    [700,465], [100,225], [700,225], [400,145]
+            //];
+
             const gasPositions = [
-                [400,385], [100,305], [700,305], [100,465],
-                [700,465], [100,225], [700,225], [400,145]
+                [330,130], [250,690], [850,420],
+                [1530,190], [1660,700]
             ];
+
             let currentGasIndex = Phaser.Math.Between(0, gasPositions.length - 1);
             let currentGas = this.gas.create(...gasPositions[currentGasIndex], 'gas');
             currentGas.setVisible(false);
@@ -235,19 +241,18 @@
                     airplane1Score += 1;
                     this.airplane1ScoreText.setText('Airbus: ' + airplane1Score);
 
-                    // Remove bone
                     gas.disableBody(true, true);
                 }
             });
 
-            // Check for collisions between player 2 and bones
+            // Check for collisions between player 2 and gas
             this.physics.overlap(this.airplane2, this.gas, (player, gas) => {
                 // Increment player 2 score
                 if(gas.visible) {
                     airplane2Score += 1;
                     this.airplane2ScoreText.setText('Boeing: ' + airplane2Score);
 
-                    // Remove bone
+                    // Remove gas
                     gas.disableBody(true, true);
                 }
             });
