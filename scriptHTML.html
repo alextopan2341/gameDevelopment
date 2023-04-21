@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="scriptCSS.css">
-    <title>Airplanes Battle Game Development</title>
+    <title>Sky Fuel Battle </title>
     <script src="//cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
-    <style type="text/css">
+    <style>
         body {
             margin: 0;
         }
@@ -25,7 +25,7 @@
             this.load.image('sky', 'images/sky.png');
             this.load.image('boeing', 'images/boeing.png');
             this.load.image('cloud', 'images/cloud.png');
-            this.load.image('sky', 'images/airplane.webp');
+            this.load.image('airplane', 'images/airplane.png');
             this.load.image('runway', 'images/runway.png');
         }
         create ()
@@ -90,10 +90,9 @@
 
         preload() {
             this.load.image('sky', 'images/sky.png');
-            this.load.image('boeing', 'images/boeing.png');
-            this.load.image('airplane', 'images/airplane.webp');
+            this.load.spritesheet('boeing', 'images/boeing.png',{ frameWidth: 55, frameHeight: 35 });
+            this.load.spritesheet('airplane', 'images/airplane.png',{ frameWidth: 55, frameHeight: 35 });
             this.load.image('cloud', 'images/cloud.png');
-            this.load.image('sky', 'images/airplane.webp');
             this.load.image('gas', 'images/gas.png');
             this.load.image('runway', 'images/runway.png');
         }
@@ -312,8 +311,13 @@
                 this.airplane1.setVelocityY(180);
             }
         }
+    }
 
-
+    class GameOverScene extends Phaser.Scene{
+        spacebar = undefined;
+        constructor() {
+            super({ key: 'gameOverScene' });
+        }
 
     }
 
@@ -333,7 +337,8 @@
         },
         scene: [
             StartScene,
-            GameScene
+            GameScene,
+            GameOverScene
         ]
     };
 
