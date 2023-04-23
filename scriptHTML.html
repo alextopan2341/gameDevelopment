@@ -57,6 +57,37 @@
             platforms.create(550, 390, 'cloud').setScale(0.3).refreshBody();//centru
             platforms.create(700, 390, 'cloud').setScale(0.3).refreshBody();
 
+            let startText = this.add.text(720, 390, 'Press SPACE to start', {
+                fontSize: '24px',
+                fill: '#fff',
+            }).setOrigin(0.5);
+
+            this.tweens.add({
+                targets: startText,
+                fontSize: '28px',
+                duration: 1000,
+                yoyo: true,
+                repeat: -1,
+            });
+
+            this.tweens.add({
+                targets: startText,
+                angle: 360,
+                duration: 2000,
+                ease: 'Linear',
+                repeat: -1,
+            });
+
+            this.tweens.add({
+                targets: startText,
+                alpha: 0,
+                duration: 300,
+                delay: 5000,
+                onComplete: () => {
+                    startText.destroy();
+                }
+            });
+
             this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         }
 
@@ -74,9 +105,9 @@
 
     class GameScene extends Phaser.Scene{
         cursors = undefined;
-        airplane1 = undefined;
+        airplane1 = null;
         airplane1ScoreText = undefined;
-        airplane2 = undefined;
+        airplane2 = null;
         airplane2ScoreText = undefined;
         platforms = undefined;
         gas = undefined;
@@ -91,7 +122,7 @@
         preload() {
             this.load.image('sky', 'images/sky.png');
             this.load.spritesheet('boeing', 'images/boeing.png',{ frameWidth: 55, frameHeight: 35 });
-            this.load.spritesheet('airplane', 'images/airplane.png',{ frameWidth: 55, frameHeight: 35 });
+            this.load.spritesheet('airplane', 'images/airplane.png',{ frameWidth: 96, frameHeight: 90 });
             this.load.image('cloud', 'images/cloud.png');
             this.load.image('gas', 'images/gas.png');
             this.load.image('runway', 'images/runway.png');
@@ -150,9 +181,12 @@
                 fontSize: '16px',
                 fill: '#fff' });
 
+
             // Add the player sprite
-            this.airplane1 = this.physics.add.sprite(100, 550.5, 'airplane');
+            this.airplane1 = this.physics.add.sprite(100, 550.5, 'airplane'); //problema aici!!!!
             // Making our sprite bigger
+
+
             this.airplane1.setScale(0.40);
             // Our sprite cannot leave the 800x600 display
             this.airplane1.setCollideWorldBounds(true);
@@ -226,7 +260,9 @@
                 repeat: -1
             });
 
+
         }
+
 
         update(){
             this.physics.overlap(this.airplane1, this.gas, (player, gas) => {
@@ -311,6 +347,8 @@
                 this.airplane1.setVelocityY(180);
             }
         }
+
+
     }
 
     class GameOverScene extends Phaser.Scene{
@@ -366,39 +404,75 @@
                 });
 
                 // Press spacebar for restarting the game text
-                let restartText = this.add.text(395, 315, 'Press SPACE to play again', {
+                let restartText = this.add.text(720, 390, 'Press SPACE to start', {
                     fontSize: '24px',
                     fill: '#fff',
+                }).setOrigin(0.5);
+
+                this.tweens.add({
+                    targets: restartText,
+                    fontSize: '28px',
+                    duration: 1000,
+                    yoyo: true,
+                    repeat: -1,
+                });
+
+                this.tweens.add({
+                    targets: restartText,
+                    angle: 360,
+                    duration: 2000,
+                    ease: 'Linear',
+                    repeat: -1,
                 });
 
                 this.tweens.add({
                     targets: restartText,
                     alpha: 0,
                     duration: 300,
-                    yoyo: true,
-                    repeat: -1
+                    delay: 5000,
+                    onComplete: () => {
+                        restartText.destroy();
+                    }
                 });
 
             }
             else if(airplane2Score === 10) {
                 // Add text indicating the game is over
-                this.add.text(115, 285, 'Boeing won', {
+                this.add.text(170, 200, 'Boeing won', {
                     fontSize: '32px',
                     fill: '#fff',
                 });
 
                 // Press spacebar for restarting the game text
-                let restartText = this.add.text(50, 315, 'Press SPACE to play again', {
+                let restartText = this.add.text(720, 390, 'Press SPACE to start', {
                     fontSize: '24px',
                     fill: '#fff',
+                }).setOrigin(0.5);
+
+                this.tweens.add({
+                    targets: restartText,
+                    fontSize: '28px',
+                    duration: 1000,
+                    yoyo: true,
+                    repeat: -1,
+                });
+
+                this.tweens.add({
+                    targets: restartText,
+                    angle: 360,
+                    duration: 2000,
+                    ease: 'Linear',
+                    repeat: -1,
                 });
 
                 this.tweens.add({
                     targets: restartText,
                     alpha: 0,
                     duration: 300,
-                    yoyo: true,
-                    repeat: -1
+                    delay: 5000,
+                    onComplete: () => {
+                        restartText.destroy();
+                    }
                 });
             }
 
