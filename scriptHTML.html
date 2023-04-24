@@ -121,8 +121,8 @@
 
         preload() {
             this.load.image('sky', 'images/sky.png');
-            this.load.spritesheet('boeing', 'images/boeing.png',{ frameWidth: 55, frameHeight: 35 });
-            this.load.spritesheet('airplane', 'images/airplane.png',{ frameWidth: 96, frameHeight: 90 });
+            this.load.image('boeing', 'images/boeing.png');
+            this.load.image('airplane', 'images/airplane.png');
             this.load.image('cloud', 'images/cloud.png');
             this.load.image('gas', 'images/gas.png');
             this.load.image('runway', 'images/runway.png');
@@ -175,22 +175,27 @@
             // Making our sprite bigger
             this.airplane2.setScale(0.25);
             // Our sprite cannot leave the 800x600 display
+            this.physics.add.existing(this.airplane2, false);
+
             this.airplane2.setCollideWorldBounds(true);
+            this.airplane2.body.setGravityY(300);
+
+
             // Add score text for player 2
             this.airplane2ScoreText = this.add.text(1350, 16, 'Boeing:' + airplane2Score, {
                 fontSize: '16px',
                 fill: '#fff' });
 
 
-            // Add the player sprite
             this.airplane1 = this.physics.add.sprite(100, 550.5, 'airplane'); //problema aici!!!!
-            // Making our sprite bigger
-
 
             this.airplane1.setScale(0.40);
-            // Our sprite cannot leave the 800x600 display
+
+            this.physics.add.existing(this.airplane1, false);
             this.airplane1.setCollideWorldBounds(true);
-            // Add score text for player 1
+
+            this.airplane1.body.setGravityY(300);
+
             this.airplane1ScoreText = this.add.text(16, 16, 'Airbus:' + airplane1Score, {
                 fontSize: '16px',
                 fill: '#fff' });
@@ -222,40 +227,49 @@
 
             this.anims.create({
                 key: 'boeingLeft',
-                frames: this.anims.generateFrameNumbers('boeing', { start: 0, end: 7 }),
+                frames: [ { key: 'boeing', frame: 1 } ],
                 frameRate: 10,
                 repeat: -1
             });
 
             this.anims.create({
                 key: 'boeingTurn',
-                frames: [ { key: 'boeing', frame: 8 } ],
+                frames: [ { key: 'boeing', frame: 1 } ],
                 frameRate: 20
             });
 
             this.anims.create({
                 key: 'boeingRight',
-                frames: this.anims.generateFrameNumbers('boeing', { start: 9, end: 16 }),
+                frames: [ { key: 'boeing', frame: 1 } ],
                 frameRate: 10,
                 repeat: -1
             });
 
+            
             this.anims.create({
                 key: 'airplaneLeft',
-                frames: this.anims.generateFrameNumbers('airplane', { start: 0, end: 7 }),
+                frames: [
+                    { key: 'airplane', frame: 1 },
+                ],
                 frameRate: 10,
                 repeat: -1
             });
+
 
             this.anims.create({
                 key: 'airplaneTurn',
-                frames: [ { key: 'airplane', frame: 8 } ],
-                frameRate: 20
+                frames: [
+                    { key: 'airplane', frame: 1 },
+                ],
+                frameRate: 10,
+                repeat: -1
             });
 
             this.anims.create({
                 key: 'airplaneRight',
-                frames: this.anims.generateFrameNumbers('airplane', { start: 9, end: 16 }),
+                frames: [
+                    { key: 'airplane', frame: 1 }
+                ],
                 frameRate: 10,
                 repeat: -1
             });
@@ -300,27 +314,20 @@
                 this.scene.start('gameOverScene');
             }
 
-            if (this.cursors.left.isDown)
-            {
-                this.airplane2.setVelocityX(-180);
-                this.airplane2.anims.play('boeingLeft', true);
-            }
-            else if (this.cursors.right.isDown)
-            {
-                this.airplane2.setVelocityX(180);
-                this.airplane2.anims.play('boeingRight', true);
-            }
-            else
-            {
-                this.airplane2.setVelocityX(0);
-                this.airplane2.anims.play('boeingTurn');
-            }
-            if (this.cursors.up.isDown && this.airplane2.body.touching.down)
-            {
-                this.airplane2.setVelocityY(-230);
-            }
-            if(this.cursors.down.isDown && !this.airplane2.body.touching.down) {
-                this.airplane2.setVelocityY(180);
+            if (this.cursors.up.isDown) {
+                this.airplane2.setVelocityY(-100);
+                this.airplane2.setFlipX(false);
+            } else if (this.cursors.down.isDown) {
+                this.airplane2.setVelocityY(100);
+                this.airplane2.setFlipX(false);
+            } else if (this.cursors.left.isDown) {
+                this.airplane2.setVelocityX(-100);
+                this.airplane2.setFlipX(true);
+            } else if (this.cursors.right.isDown) {
+                this.airplane2.setVelocityX(100);
+                this.airplane2.setFlipX(false);
+            } else {
+                this.airplane2.setVelocity(0);
             }
 
             if (this.keyA.isDown)
@@ -336,19 +343,20 @@
             else
             {
                 this.airplane1.setVelocityX(0);
-                this.airplane1.anims.play('airplaneTurn');
+                this.airplane1.anims.play('airplaneTurn',true);
             }
 
-            if (this.keyW.isDown && this.airplane1.body.touching.down)
+            if (this.keyW.isDown )
             {
-                this.airplane1.setVelocityY(-230);
+                this.airplane1.setVelocityY(-100);
+                this.airplane1.anims.play('airplaneTurn',true);
             }
-            if(this.keyS.isDown && !this.airplane1.body.touching.down) {
-                this.airplane1.setVelocityY(180);
+
+            if(this.keyS.isDown ) {
+                this.airplane1.setVelocityY(100);
+                this.airplane1.anims.play('airplaneTurn',true);
             }
         }
-
-
     }
 
     class GameOverScene extends Phaser.Scene{
